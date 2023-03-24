@@ -1,25 +1,24 @@
-***NOTE*** CTAN isn't letting me update their copy of the package and I don't have time to waste chasing it.
-
-** The CTAN version is *out of date. **
-
-** The Github repository has the most up-to-date version. **
-
-
 Title:
-	Neural Network
+	Neural Network SL
 
-Author:
+Author of the original:
 	Mark K Cowan, mark@battlesnake.co.uk
+
+Modified for SL lecture notes:
+	Emir G
 
 Installation:
 	The most up-to-date version of this package is available as a git repository:
 		battlesnake/neural
 		https://github.com/battlesnake/neural
-		
+	
 	This package is also available on CTAN as `neuralnetwork`:
 		/graphics/pgf/contrib/neuralnetwork
 		http://www.ctan.org/tex-archive/graphics/pgf/contrib/neuralnetwork
 
+	This fork is available at
+		https://github.com/gumrukcuoglu/neuralSL
+	
 Description:
 	LaTeX package for drawing graphs, particularly neural network diagrams.
 
@@ -114,5 +113,14 @@ Description:
 		% from node = node to link from [REQUIRED]
 		% to layer = layer to link to [REQUIRED]
 		% to node = node to link to [REQUIRED]
+
+		% Additions specific to this fork:
+		% To draw arrows going into the input layer nodes and out 
+		% of output layer nodes, setup a blank layer:
+		% 	\blanklayer[count=i] 
+		% where i is the same as the size of inputlayer,
+		% then link it to the input/output layer using
+		%	\linkblank
+		
 
 	\end{neuralnetwork}
