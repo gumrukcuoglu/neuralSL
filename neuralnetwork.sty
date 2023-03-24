@@ -1,11 +1,15 @@
-\ProvidesPackage{neuralnetwork}[2013/07/18 v1.0 Neural network diagrams, Mark Kuckian Cowan, mark@battlesnake.co.uk]
+\ProvidesPackage{neuralnetwork}[2023/03/23 Neural network diagrams]
 
+%  This fork is available from github:
+%     git clone https://github.com/gumrukcuoglu/neuralSL
+%  Modified original to fit to the standards of SL lecture notes.
+%  [Incorporated incoming and outgoing arrows. Changed the colour scheme.]
 %
+%  Forked from Neural Network by Mark Kuckian Cowan, mark@battlesnake.co.uk
 %  Available from github:
 %    git clone https://github.com/battlesnake/neural
 %
 %  Distributed under the terms of the GNU General Public License version 2 (GPL2)
-%
 
 \NeedsTeXFormat{LaTeX2e}
 
@@ -34,22 +38,27 @@
 \define@key{network}{nodesize} {\pgfmathsetlengthmacro\nn@nodesize{#1}}
 \define@key{network}{title} {\def\nn@maintitle{#1}}
 \define@key{network}{titlestyle} {\def\nn@titlestyle{#1}}
+\definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}
+\definecolor{darkblue}{rgb}{0.2, 0.2, 0.6}
+\definecolor{burgundy}{rgb}{0.5, 0.0, 0.13}
 
 \NewEnviron{neuralnetwork}[1][] {{%
 \begingroup
-\setkeys{network} {nodespacing=1.0cm, layerspacing=2.5cm, maintitleheight=2.5em, layertitleheight=2.5em, height=5, toprow=false, nodesize=17pt, style={}, title={}, titlestyle={}, #1}
+\setkeys{network} {nodespacing=1.2cm, layerspacing=2.7cm, maintitleheight=2.5em, layertitleheight=2.5em, height=5, toprow=false, nodesize=22pt, style={}, title={}, titlestyle={}, #1}
 \edef\nn@tikzpic@styled{\noexpand\begin{tikzpicture}[\nn@style]}
 \nn@tikzpic@styled
-  \tikzstyle{neuron}=[circle,fill=black!25,minimum size=\nn@nodesize,inner sep=0pt]
-  \tikzstyle{input neuron}=[neuron, fill=green!50];
-  \tikzstyle{output neuron}=[neuron, fill=red!50];
-  \tikzstyle{hidden neuron}=[neuron, fill=blue!40];
-  \tikzstyle{bias neuron}=[neuron, fill=yellow!50];
+%
+  \tikzstyle{neuron}=[circle,draw=black,fill=black!25,minimum size=\nn@nodesize,inner sep=0pt]
+  \tikzstyle{blank neuron}=[minimum size=\nn@nodesize,inner sep=0pt]
+  \tikzstyle{input neuron}=[neuron, draw=darkgreen!90, ultra thick, fill=green!30];
+  \tikzstyle{output neuron}=[neuron, draw=burgundy!90, ultra thick, fill=red!30];
+  \tikzstyle{hidden neuron}=[neuron, draw=darkblue!90, ultra thick, fill=blue!30];
+  \tikzstyle{bias neuron}=[neuron, fill=yellow!30];
   \tikzstyle{layertitle} = [text width=\nn@layerspacing - (1 em), text centered];
   \tikzstyle{layertitlewide} = [layertitle, text width=\nn@layerspacing + (2 em)];
   \tikzstyle{linkstitle} = [text centered, fill=white, text=darkgray, fill opacity=0.45, text opacity=1.0, inner sep=2pt, ellipse];
   \tikzstyle{linklabel} = [rectangle, fill=white, text opacity=1.0, text=black, text centered, inner sep=0pt];
-  \tikzstyle{link} = [->, shorten <=0pt, shorten >=1pt, node distance=\nn@layerspacing, thin, draw=black!45];
+  \tikzstyle{link} = [->, shorten <=0pt, shorten >=1pt, node distance=\nn@layerspacing, thin, draw=black!85];
   \tikzstyle{networktitle} = [rectangle, text=black, text centered, inner sep=0pt];
   \nn@var{layerindex}
   \nn@var{lastlayerstart} \nn@var{thislayerstart}
@@ -188,6 +197,7 @@
   \nn@set{thislayerindex}{\nn@layerindex}
   \nn@inc{layerindex}
 }}
+\newcommand{\blanklayer}[1][] { \layer[bias=false,nodeclass={blank neuron},#1] }
 \newcommand{\inputlayer}[1][] { \layer[bias=true,nodeclass={input neuron},#1] }
 \newcommand{\hiddenlayer}[1][] { \layer[bias=true,nodeclass={hidden neuron},#1] }
 \newcommand{\outputlayer}[1][] { \layer[bias=false,nodeclass={output neuron},#1] }
@@ -221,6 +231,25 @@
     \pgfmathsetlengthmacro{\nn@links@title@y} {-(\nn@maintitleheight + \nn@layertitleheight - (\nn@nodespacing / 6))}
     \node[linkstitle] (TL\nn@lastlayer) at (\nn@links@title@x, \nn@links@title@y) {\nn@linkstitle};
   }
+}}
+
+
+\newcommand{\linkblank}[1][] {{%
+% Added by AEG. Draw input and output links from blank layer. Only pair the same level node.
+% Requires blank layer to have the same number of nodes as this one.
+  \setkeys{links} {title={},labels=\nn@defaultlinklabel,style={},not from={}, not to={},#1}
+  % Layer indices
+  \edef\nn@lastlayer{\nn@get{lastlayerindex}}
+  \edef\nn@thislayer{\nn@get{thislayerindex}}
+  % Links
+  \foreach \nn@lastnode in {\nn@get{lastlayerstart},...,\nn@get{lastlayercount}}
+      \link[from layer=\nn@lastlayer, from node=\nn@lastnode, to layer=\nn@thislayer, to node=\nn@lastnode, label=\nn@linkslabels, style=\nn@linksstyle];
+%   % Title
+%   \ifdefempty{\nn@linkstitle} {} {
+%     \pgfmathsetlengthmacro{\nn@links@title@x} {\nn@layerspacing * (\nn@thislayer - 0.5)}
+%     \pgfmathsetlengthmacro{\nn@links@title@y} {-(\nn@maintitleheight + \nn@layertitleheight - (\nn@nodespacing / 6))}
+%     \node[linkstitle] (TL\nn@lastlayer) at (\nn@links@title@x, \nn@links@title@y) {\nn@linkstitle};
+%   }
 }}
 
 \newcommand{\nn@defaultlinklabel}[4] {\empty}
